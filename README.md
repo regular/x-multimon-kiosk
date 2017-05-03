@@ -1,3 +1,5 @@
+# Work in progress
+
 ## Dependencies
 
 You need to use `compiz` as your window manager (will be started by this module automatically) and the `xrandr` binary.
