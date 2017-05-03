@@ -99,7 +99,7 @@ module.exports = function(opts, cb) {
 
     function writeCompizConfig(xres, yres, cb) {
         if (!opts.compizConfigPath) return cb(null);
-        let content = opts.compizTemplate({xres,yres});
+        let content = opts.compizConfigTemplate({xres,yres});
         try {
             opts.writeFileSync(opts.compizConfigPath, content);
         } catch(e) {
