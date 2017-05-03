@@ -1,0 +1,30 @@
+{
+  "name": "x-multimon-kiosk",
+  "version": "1.0.0",
+  "description": "multi-monitor management for kiosk systems and interactive installations",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "x",
+    "compiz",
+    "xrandr",
+    "kiosk",
+    "multi-monitor",
+    "displays",
+    "screens"
+  ],
+  "author": "Jan Bölsche <jan@lagomorph.de> (http://regular.codes)",
+  "license": "MIT",
+  "dependencies": {
+    "pull-split": "^0.2.0",
+    "pull-stream": "^3.5.0",
+    "stream-to-pull-stream": "^1.7.2"
+  },
+  "devDependencies": {
+    "bl": "^1.2.1",
+    "from2-string": "^1.1.0",
+    "tape": "^4.6.3"
+  }
+}
