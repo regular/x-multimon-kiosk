@@ -8,9 +8,12 @@ const fs = require('fs');
 // ask xrandr for the connected displays
 // and create ~/.config/compiz-1/compizconfig/Default.ini
 
+const HORIZONTAL = 1;
+
 const defulats = {
     compizConfigPath: `${process.env.HOME}/.config/compiz-1/compizconfig/Default.ini`,
-    sortFunc: (a, b)=> a == b ? 0 : (a > b ? 1 : -1),
+    arrange: HORIZONTAL,
+    sortFunc: (a, b)=> a.name === b.name ? 0 : (a.name > b.name ? 1 : -1),
     xrandrPath: `/usr/bin/xrandr`,
     compizrPath: `/usr/bin/compiz`,
     spawn: spawn,   // used by tests
@@ -29,22 +32,29 @@ module.exports = function(opts, cb) {
 	    pull.collect( (err, screens) => {
 			if (err) return cb(err);
             if (!screens.length) return cb(new Error('No monitors detected'));
+            // TODO: implement vertical
 			let xres = screens.reduce( (acc, screen) => acc + screen.xres, 0);
 			let yres = screens[0].yres;
-            if (opts.compizConfigPath) {
-                let content = compizTemplate({xres,yres});
-                try {
-                    opts.writeFileSync(opts.compizConfigPath, content);
-                } catch(e) {
-                    return cb(e);
-                }
-            }
-			cb(null, screens);
+
+            // sort screens
+            screens.sort(opts.sortFunc);
+
+            arrangeScreens(screens)( (err)=>{
+                if (err) return cb(err);
+                writeCompizConfig(xres, yres, (err)=>{
+                    if (err) return cb(err);
+                    pull(
+                        xrandr(),
+                        pull.collect(cb)
+                    );
+                });
+            });
+
 	    })
 	);
 
-    function xrandr() {
-        let xrandr = opts.spawn(opts.xrandrPath);
+    function xrandr(args) {
+        let xrandr = opts.spawn(opts.xrandrPath, args);
         if (!xrandr) return pull.error(new Error('Unable to spawn xrandr'));
         return pull(
             toPull(xrandr.stdout),
@@ -63,7 +73,42 @@ module.exports = function(opts, cb) {
             })
         );
     }
+
+    // returns continuation
+    function arrangeScreens(screens) {
+        if (!opts.arrange) {
+            return cb=>cb(null);
+        }
+        // TODO: implement vertical
+        let left = 0;
+        screens.forEach( (screen)=>{
+            screen.left = left;
+            screen.top = 0;
+            left += screen.xres;
+        });
+        let xrandrArgs = screens.map( (screen)=>{
+            return `--output ${screen.name} --pos ${screen.left}x${screen.top}`;
+        }).join(' ').split(' '); // yes, this makes sense
+        return cb=>{
+            pull(
+                xrandr(xrandrArgs),
+                pull.collect(cb)
+            );
+        };
+    }
+
+    function writeCompizConfig(xres, yres, cb) {
+        if (!opts.compizConfigPath) return cb(null);
+        let content = opts.compizTemplate({xres,yres});
+        try {
+            opts.writeFileSync(opts.compizConfigPath, content);
+        } catch(e) {
+            return cb(e);
+        }
+        cb(null);
+    }
 };
+module.exports.HORIZONTAL = HORIZONTAL;
 
 function compizTemplate({xres, yres}) {
 	return `
