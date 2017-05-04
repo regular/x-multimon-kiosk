@@ -4,7 +4,7 @@
   "description": "multi-monitor management for kiosk systems and interactive installations",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "tape test.js"
   },
   "keywords": [
     "x",
@@ -23,8 +23,15 @@
     "stream-to-pull-stream": "^1.7.2"
   },
   "devDependencies": {
-    "bl": "^1.2.1",
     "from2-string": "^1.1.0",
     "tape": "^4.6.3"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/regular/x-multimon-kiosk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/regular/x-multimon-kiosk/issues"
+  },
+  "homepage": "https://github.com/regular/x-multimon-kiosk#readme"
 }
