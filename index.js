@@ -8,6 +8,7 @@ const fs = require('fs');
 // ask xrandr for the connected displays
 // and create ~/.config/compiz-1/compizconfig/Default.ini
 
+// TODO: implement vertical
 const HORIZONTAL = 1;
 
 const defulats = {
@@ -15,7 +16,6 @@ const defulats = {
     arrange: HORIZONTAL,
     sortFunc: (a, b)=> a.name === b.name ? 0 : (a.name > b.name ? 1 : -1),
     xrandrPath: `/usr/bin/xrandr`,
-    compizrPath: `/usr/bin/compiz`,
     spawn: spawn,   // used by tests
     writeFileSync: fs.writeFileSync, // used by tests
     compizConfigTemplate: compizTemplate
